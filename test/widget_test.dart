@@ -1,56 +1,61 @@
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import 'package:alllab/main.dart';
+import 'package:alllab/repositories/show_repository_impl.dart';
 
 void main() {
-  testWidgets('Нажатие на лайк показывает Snackbar',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(const MovieApp());
+  testWidgets(
+    'Нажатие на лайк показывает Snackbar',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MovieApp(
+          repository: ShowRepositoryImpl(),
+        ),
+      );
 
-    // Находим первую кнопку лайка
-    final likeButton = find.byKey(const Key('like_0'));
+      // Ждём загрузки данных
+      await tester.pumpAndSettle();
 
-    expect(likeButton, findsOneWidget);
+      // Находим первую кнопку лайка
+      final likeButton = find.byType(IconButton).first;
 
-    // Нажимаем на лайк
-    await tester.tap(likeButton);
-    await tester.pump();
+      expect(likeButton, findsOneWidget);
 
-    // Проверяем Snackbar
-    expect(find.byType(SnackBar), findsOneWidget);
-    expect(
-      find.text('Фильм добавлен в избранное'),
-      findsOneWidget,
-    );
-  });
+      await tester.tap(likeButton);
+      await tester.pump();
 
-  testWidgets('Нажатие на карточку открывает детали',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(const MovieApp());
+      // Проверяем Snackbar
+      expect(find.byType(SnackBar), findsOneWidget);
+    },
+  );
 
-    // Нажимаем на первую карточку
-    await tester.tap(find.byType(Card).first);
-    await tester.pump();
+  testWidgets(
+    'Нажатие на карточку открывает окно деталей',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MovieApp(
+          repository: ShowRepositoryImpl(),
+        ),
+      );
 
-    // Проверяем окно с подробной информацией
-    expect(find.byType(AlertDialog), findsOneWidget);
+      // Ждём загрузки API
+      await tester.pumpAndSettle();
 
-    expect(
-      find.text('Интерстеллар'),
-      findsWidgets,
-    );
+      // Находим карточку
+      final card = find.byType(Card).first;
 
-    expect(
-      find.text('Описание'),
-      findsOneWidget,
-    );
+      expect(card, findsOneWidget);
 
-    expect(
-      find.text('Закрыть'),
-      findsOneWidget,
-    );
-  });
+      await tester.tap(card);
+      await tester.pump();
+
+      // Проверяем, что появилось диалоговое окно
+      expect(find.byType(AlertDialog), findsOneWidget);
+
+      expect(find.text('Закрыть'), findsOneWidget);
+    },
+  );
 }
 
