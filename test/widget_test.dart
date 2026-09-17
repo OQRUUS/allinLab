@@ -1,19 +1,56 @@
-import 'package:flutter/material.dart';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/material.dart';
 
 import 'package:alllab/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Нажатие на лайк показывает Snackbar',
+      (WidgetTester tester) async {
     await tester.pumpWidget(const MovieApp());
 
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Находим первую кнопку лайка
+    final likeButton = find.byKey(const Key('like_0'));
 
-    await tester.tap(find.byIcon(Icons.add));
+    expect(likeButton, findsOneWidget);
+
+    // Нажимаем на лайк
+    await tester.tap(likeButton);
     await tester.pump();
 
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Проверяем Snackbar
+    expect(find.byType(SnackBar), findsOneWidget);
+    expect(
+      find.text('Фильм добавлен в избранное'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('Нажатие на карточку открывает детали',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const MovieApp());
+
+    // Нажимаем на первую карточку
+    await tester.tap(find.byType(Card).first);
+    await tester.pump();
+
+    // Проверяем окно с подробной информацией
+    expect(find.byType(AlertDialog), findsOneWidget);
+
+    expect(
+      find.text('Интерстеллар'),
+      findsWidgets,
+    );
+
+    expect(
+      find.text('Описание'),
+      findsOneWidget,
+    );
+
+    expect(
+      find.text('Закрыть'),
+      findsOneWidget,
+    );
   });
 }
+

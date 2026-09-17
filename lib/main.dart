@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -10,146 +11,329 @@ class MovieApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Movie Search',
       debugShowCheckedModeBanner: false,
+      title: 'Movie App',
       theme: ThemeData(
-        primarySwatch: Colors.red,
         useMaterial3: true,
+        colorSchemeSeed: Colors.deepPurple,
+        brightness: Brightness.light,
       ),
-      home: const MoviesListScreen(),
-    );
-  }
-}
-
-class MoviesListScreen extends StatelessWidget {
-  const MoviesListScreen({super.key});
-
-  // Временные данные (потом заменим на API)
-  static const List<Movie> movies = [
-    Movie(
-      title: 'Начало',
-      year: '2010',
-      genre: 'Фантастика, Боевик',
-      poster: 'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
-      plot: 'Кобб — талантливый вор, лучший из лучших в опасном искусстве извлечения: он крадет ценные секреты из глубин подсознания во время сна.',
-    ),
-    Movie(
-      title: 'Темный рыцарь',
-      year: '2008',
-      genre: 'Боевик, Драма',
-      poster: 'https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_SX300.jpg',
-      plot: 'Бэтмен поднимает ставки в войне с криминалом. С помощью лейтенанта Джима Гордона и прокурора Харви Дента он намерен очистить Готэм от остатков преступного мира.',
-    ),
-    Movie(
-      title: 'Интерстеллар',
-      year: '2014',
-      genre: 'Фантастика, Драма',
-      poster: 'https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_SX300.jpg',
-      plot: 'Когда засуха, пыльные бури и вымирание растений приводят человечество к продовольственному кризису, коллектив исследователей и учёных отправляется сквозь червоточину в космос.',
-    ),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Черников Герман, Пдоп-36'),
-        backgroundColor: Colors.red,
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: movies.length,
-        itemBuilder: (context, index) {
-          return MovieCard(movie: movies[index]);
-        },
-      ),
-    );
-  }
-}
-
-class MovieCard extends StatelessWidget {
-  final Movie movie;
-
-  const MovieCard({super.key, required this.movie});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            child: Image.network(
-              movie.poster,
-              height: 300,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  height: 300,
-                  color: Colors.grey[300],
-                  child: const Icon(Icons.movie, size: 50),
-                );
-              },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  movie.title,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
-                    const SizedBox(width: 4),
-                    Text(movie.year, style: TextStyle(color: Colors.grey[600])),
-                    const SizedBox(width: 16),
-                    Icon(Icons.tag, size: 16, color: Colors.grey[600]),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        movie.genre,
-                        style: TextStyle(color: Colors.grey[600]),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      home: const MovieHomePage(),
     );
   }
 }
 
 class Movie {
   final String title;
-  final String year;
+  final String description;
   final String genre;
-  final String poster;
-  final String plot;
+  final String year;
+  final String rating;
+  final IconData icon;
 
-  const Movie({
+  Movie({
     required this.title,
-    required this.year,
+    required this.description,
     required this.genre,
-    required this.poster,
-    required this.plot,
+    required this.year,
+    required this.rating,
+    required this.icon,
   });
+}
+
+class MovieHomePage extends StatefulWidget {
+  const MovieHomePage({super.key});
+
+  @override
+  State<MovieHomePage> createState() => _MovieHomePageState();
+}
+
+class _MovieHomePageState extends State<MovieHomePage> {
+  final List<Movie> movies = [
+    Movie(
+      title: 'Интерстеллар',
+      description:
+          'Группа исследователей отправляется в космос через таинственную червоточину, чтобы найти новый дом для человечества.',
+      genre: 'Фантастика',
+      year: '2014',
+      rating: '8.7',
+      icon: Icons.public,
+    ),
+    Movie(
+      title: 'Начало',
+      description:
+          'Профессиональный вор, способный проникать в сны людей, получает практически невыполнимое задание.',
+      genre: 'Триллер',
+      year: '2010',
+      rating: '8.8',
+      icon: Icons.psychology,
+    ),
+    Movie(
+      title: 'Матрица',
+      description:
+          'Нео узнаёт, что привычный ему мир является цифровой иллюзией, созданной машинами.',
+      genre: 'Боевик',
+      year: '1999',
+      rating: '8.7',
+      icon: Icons.auto_awesome,
+    ),
+    Movie(
+      title: 'Джокер',
+      description:
+          'История Артура Флека, человека, который постепенно превращается в загадочного персонажа Готэм-сити.',
+      genre: 'Драма',
+      year: '2019',
+      rating: '8.3',
+      icon: Icons.theater_comedy,
+    ),
+  ];
+
+  // Список лайков для каждой карточки.
+  final Set<int> likedMovies = {};
+
+  void toggleLike(int index) {
+    setState(() {
+      if (likedMovies.contains(index)) {
+        likedMovies.remove(index);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Фильм удалён из избранного'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else {
+        likedMovies.add(index);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Фильм добавлен в избранное'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    });
+  }
+
+  void showMovieDetails(Movie movie) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            movie.title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 90,
+                    height: 90,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primaryContainer,
+                    ),
+                    child: Icon(
+                      movie.icon,
+                      size: 50,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Жанр: ${movie.genre}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Год: ${movie.year}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Рейтинг: ⭐ ${movie.rating}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Описание',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  movie.description,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Закрыть'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Фильмы',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: movies.length,
+        itemBuilder: (context, index) {
+          final movie = movies[index];
+          final isLiked = likedMovies.contains(index);
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: Card(
+              elevation: 3,
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: () {
+                  showMovieDetails(movie);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Иконка фильма
+                      Container(
+                        width: 90,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primaryContainer,
+                        ),
+                        child: Icon(
+                          movie.icon,
+                          size: 45,
+                          color:
+                              Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+
+                      const SizedBox(width: 16),
+
+                      // Информация о фильме
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              movie.title,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+
+                            const SizedBox(height: 8),
+
+                            Text(
+                              movie.genre,
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+
+                            const SizedBox(height: 6),
+
+                            Text(
+                              '${movie.year} • ⭐ ${movie.rating}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                              ),
+                            ),
+
+                            const SizedBox(height: 10),
+
+                            Text(
+                              movie.description,
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                                height: 1.3,
+                              ),
+                            ),
+
+                            const SizedBox(height: 8),
+
+                            // Кнопка лайка
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: IconButton(
+                                key: Key('like_$index'),
+                                onPressed: () {
+                                  toggleLike(index);
+                                },
+                                icon: Icon(
+                                  isLiked
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                ),
+                                color: isLiked
+                                    ? Colors.red
+                                    : null,
+                                tooltip: isLiked
+                                    ? 'Убрать из избранного'
+                                    : 'Добавить в избранное',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
