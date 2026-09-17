@@ -1,30 +1,49 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:alllab/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  test('Movie создается правильно', () {
+    final movie = Movie(
+      'Начало',
+      8.8,
+      MovieGenre.sciFi,
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(movie.title, 'Начало');
+    expect(movie.rating, 8.8);
+    expect(movie.genre, MovieGenre.sciFi);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  test('Рейтинг фильма обновляется', () {
+    final movie = Movie(
+      'Начало',
+      8.8,
+      MovieGenre.sciFi,
+    );
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    movie.updateRating(8.9);
+
+    expect(movie.rating, 8.9);
+  });
+
+  test('Storage хранит фильмы', () {
+    final storage = Storage<Movie>();
+
+    storage.addItem(
+      Movie('Начало', 8.8, MovieGenre.sciFi),
+    );
+
+    storage.addItem(
+      Movie('1+1', 8.5, MovieGenre.drama),
+    );
+
+    expect(storage.items.length, 2);
+  });
+
+  test('Extension formatted форматирует рейтинг', () {
+    const rating = 8.8;
+
+    expect(rating.formatted, '8.8 / 10');
   });
 }
